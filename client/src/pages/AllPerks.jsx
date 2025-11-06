@@ -28,7 +28,12 @@ export default function AllPerks() {
  * useEffect Hook #1: Initial Data Loading
  * useEffect Hook #2: Auto-search on Input Change
 
-*/
+*/  
+  useEffect(() => {
+    setLoading(true);
+    loadAllPerks();
+    setLoading(false);
+  }, [merchantFilter, searchQuery]) // Empty dependency array means this runs once on mount
 
   
   useEffect(() => {
@@ -45,7 +50,7 @@ export default function AllPerks() {
     setUniqueMerchants(unique)
     
     // This effect depends on [perks], so it re-runs whenever perks changes
-  }, [perks]) // Dependency: re-run when perks array changes
+  }, [perks, merchantFilter]) // Dependency: re-run when perks array changes
 
   
   async function loadAllPerks() {
@@ -87,10 +92,11 @@ export default function AllPerks() {
   function handleSearch(e) {
     // Prevent default form submission behavior (page reload)
     e.preventDefault()
+    const searchValue = e.target.value
+    setSearchQuery(searchValue)
     
     // Immediately reload perks with current search and filter values
     // This bypasses the debounce delay for instant results
-    loadAllPerks()
   }
 
   
@@ -136,7 +142,8 @@ export default function AllPerks() {
                 type="text"
                 className="input"
                 placeholder="Enter perk name..."
-                
+                value={searchQuery}
+                onChange={e => handleSearch(e)}
               />
               <p className="text-xs text-zinc-500 mt-1">
                 Auto-searches as you type, or press Enter / click Search
@@ -151,7 +158,7 @@ export default function AllPerks() {
               </label>
               <select
                 className="input"
-                
+                onChange={(e) => {setMerchantFilter(e.target.value)}}
               >
                 <option value="">All Merchants</option>
                 
